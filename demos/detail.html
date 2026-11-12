@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101b23">
+  <meta name="description" content="Концепт Reach &amp; Form для детейлинг-студии с пакетами работ и предварительным расчётом.">
+  <title>Reach &amp; Form</title>
+<meta property="og:title" content="Reach &amp; Form">
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="common.css">
+  <script src="detail.js" defer></script>
+</head>
+<body class="detail">
+<header class="shell header" id="top">
+  <a class="wordmark" href="../#work" aria-label="Reach &amp; Form, к примерам работ">Reach <i>&amp;</i> Form</a>
+  <nav aria-label="Навигация по примеру"><a href="#services">Пакеты</a><a href="#guide">Расчёт</a><a href="#visit">Подготовка</a><a href="#route">Как добраться</a></nav>
+  <a class="primary header-cta" href="#guide">Рассчитать стоимость ↗</a>
+</header>
+<main>
+  <section class="shell hero" aria-labelledby="headline">
+    <div class="hero-copy">
+      <p class="eyebrow">Детейлинг · Демо Reach &amp; Form</p>
+      <h1 id="headline">Чистый кузов.<br>Свежий салон.</h1>
+      <p class="lead">Выберите уход за кузовом или салоном. Посмотрите состав пакетов, время работ и ориентир по стоимости для вашего автомобиля.</p>
+      <div class="actions"><a class="primary" href="#services">Посмотреть пакеты ↓</a><a class="text-link" href="#guide">Рассчитать стоимость ↗</a></div>
+    </div>
+    <figure class="hero-art"><img class="loaded" src="../assets/detail-main.webp" alt="Мастер протирает кузов автомобиля мягкой салфеткой" width="1440" height="960" fetchpriority="high"></figure>
+  </section>
+  <section class="shell catalogue" id="services" aria-labelledby="catalogue-title">
+    <h2 id="catalogue-title">Пакеты ухода</h2>
+    <div class="offers">
+      <article class="offer"><div><h3>Уход за кузовом</h3><p>Мойка, очистка дисков и нанесение защитного состава.</p></div><div class="offer-meta"><strong>от 4 500 ₽</strong><span>2 часа</span><a class="pick" href="#guide" data-package="body">Рассчитать ↗</a></div></article>
+      <article class="offer"><div><h3>Химчистка салона</h3><p>Очистка сидений, ковров, дверных карт и пластика.</p></div><div class="offer-meta"><strong>от 9 000 ₽</strong><span>6 часов</span><a class="pick" href="#guide" data-package="interior">Рассчитать ↗</a></div></article>
+      <article class="offer"><div><h3>Комплексный уход</h3><p>Уход за кузовом и химчистка салона за один визит.</p></div><div class="offer-meta"><strong>от 12 000 ₽</strong><span>1 день</span><a class="pick" href="#guide" data-package="full">Рассчитать ↗</a></div></article>
+    </div>
+  </section>
+  <section class="shell guide" id="guide" aria-labelledby="guide-title">
+    <div class="guide-copy"><p class="eyebrow">Помощник Reach &amp; Form</p><h2 id="guide-title">Сколько стоит уход</h2><p>Выберите пакет и класс автомобиля. Помощник покажет ориентир и перенесёт расчёт в демо-заявку.</p><small>Цены условные. Фактическую стоимость студия уточняет после осмотра.</small></div>
+    <div class="guide-panel">
+      <form id="estimate">
+        <label>Пакет<select id="package"><option value="body" data-price="4500">Уход за кузовом</option><option value="interior" data-price="9000">Химчистка салона</option><option value="full" data-price="12000">Комплексный уход</option></select></label>
+        <label>Автомобиль<select id="car-class"><option value="0">Седан / хэтчбек</option><option value="1500">Кроссовер</option><option value="2500">Внедорожник / минивэн</option></select></label>
+        <output id="estimate-result" class="estimate-result" aria-live="polite">4 500 ₽</output>
+        <button class="primary" type="submit">Открыть демо-заявку ↗</button>
+      </form><form class="guide-form" id="guide-form"><label for="guide-question">Или задайте свой вопрос</label><div><input id="guide-question" required maxlength="180" placeholder="Что можно выбрать?"><button type="submit" class="primary">Спросить</button></div></form><p id="detail-answer" class="answer" aria-live="polite"></p>
+    </div>
+  </section>
+  <section class="shell demo-section demo-faq" id="visit" aria-labelledby="visit-title">
+    <h2 id="visit-title">Перед визитом</h2>
+    <div class="demo-faq-list">
+      <details><summary>Что убрать из автомобиля?</summary><p>Заберите личные вещи из салона и багажника, чтобы мастер мог очистить все поверхности.</p></details>
+      <details><summary>Когда можно забрать автомобиль?</summary><p>Ориентир зависит от пакета. При химчистке время также зависит от того, сколько будет сохнуть салон.</p></details>
+      <details><summary>Когда уточняется стоимость?</summary><p>После осмотра автомобиля студия согласовывает состав работ и итоговую сумму до начала ухода.</p></details>
+    </div>
+  </section>
+<section class="shell route" id="route" aria-labelledby="route-title"><div><p class="eyebrow">Навигация в демо</p><h2 id="route-title">Как добраться</h2><p>На карте показан городской ориентир для проверки маршрута. По этому адресу нет точки обслуживания Reach &amp; Form.</p></div><div class="route-card"><strong>ТРК «Галактика»</strong><address>Краснодар, ул. Уральская, 98/11</address><p>Постройте маршрут для автомобиля до ориентира на Уральской.</p><a class="primary" href="https://yandex.ru/maps/?text=%D0%9A%D1%80%D0%B0%D1%81%D0%BD%D0%BE%D0%B4%D0%B0%D1%80%2C+%D1%83%D0%BB.+%D0%A3%D1%80%D0%B0%D0%BB%D1%8C%D1%81%D0%BA%D0%B0%D1%8F%2C+98%2F11" target="_blank" rel="noopener noreferrer">Открыть на карте ↗</a></div></section>
+</main>
+<footer class="shell footer">
+  <div><a class="wordmark" href="../#work">Reach <i>&amp;</i> Form</a><p>Концепт студии. Все суммы демонстрационные. <a href="https://www.pexels.com/photo/close-up-of-hand-polishing-car-surface-35149476/" target="_blank" rel="noopener noreferrer">Источник фото</a>.</p></div>
+  <div class="footer-links"><a href="../#work">Все примеры</a><a class="primary" href="https://t.me/sergiovolkov01" target="_blank" rel="noopener noreferrer">Обсудить такой сайт ↗</a></div>
+</footer>
+<a class="primary mobile-cta" href="#guide">Рассчитать стоимость ↗</a>
+<dialog id="detail-request" aria-labelledby="request-title">
+  <form method="dialog"><button class="close" aria-label="Закрыть" type="submit">×</button></form>
+  <p class="eyebrow">Демонстрация · заявка</p>
+  <h2 id="request-title">Ваш расчёт</h2>
+  <p id="request-summary"></p>
+  <p class="request-note">Это пример заявки. Данные остаются в браузере.</p>
+</dialog>
+</body>
+</html>

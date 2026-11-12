@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#eee4e0">
+<meta name="description" content="Reach &amp; Form: интерактивный концепт сайта. Салон красоты, услуги, помощник и сценарий записи.">
+<title>Reach &amp; Form</title>
+<meta property="og:title" content="Reach &amp; Form">
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="common.css">
+<script src="demo.js" defer></script>
+</head>
+<body class="atelier">
+<header class="shell header" id="top">
+  <a class="wordmark" href="../#work" aria-label="Reach &amp; Form, к примерам работ">Reach <i>&amp;</i> Form</a>
+  <nav aria-label="Навигация по примеру"><a href="#services">Услуги</a><a href="#team">Мастера</a><a href="#guide">Помощник</a><a href="#visit">Визит</a><a href="#route">Как добраться</a></nav>
+  <button class="primary header-cta" type="button" data-book>Выбрать время <span aria-hidden="true">↗</span></button>
+</header>
+<main>
+  <section class="shell hero" aria-labelledby="headline">
+    <div class="hero-copy">
+      <p class="eyebrow">Салон красоты <span>·</span> Демо Reach &amp; Form</p>
+      <h1 id="headline">Уход и укладка<br>для вашего ритма.</h1>
+      <p class="lead">Укладки, уход за лицом и расслабляющие процедуры. Посмотрите цены и выберите время для себя.</p>
+      <div class="actions"><a class="primary" href="#services">Услуги и цены <span aria-hidden="true">↓</span></a><a class="text-link" href="#guide">Спросить помощника <span aria-hidden="true">↗</span></a></div>
+    </div>
+    <figure class="hero-art">
+      <div class="art-fallback" aria-hidden="true"><span>Reach</span><i>&amp;</i><span>Form</span></div>
+      <img src="../assets/atelier-main.webp" alt="Светлый салон с зеркалами и мастером за работой" width="1440" height="960" fetchpriority="high">
+    </figure>
+  </section>
+  <section class="shell catalogue" id="services" aria-labelledby="catalogue-title">
+    <h2 id="catalogue-title">Услуги и цены</h2>
+
+    <div class="offers"><article class="offer" data-category="45 минут"><div><h3>Укладка</h3><p>Укладка под вашу длину волос и повод.</p></div><div class="offer-meta"><strong>2 800 ₽</strong><span>45 минут</span><button type=button class=pick data-book=0>Выбрать <span aria-hidden=true>↗</span></button></div></article><article class="offer" data-category="60 минут"><div><h3>Уход за лицом</h3><p>Мягкое очищение и увлажнение. Состав уточняет мастер.</p></div><div class="offer-meta"><strong>3 200 ₽</strong><span>60 минут</span><button type=button class=pick data-book=1>Выбрать <span aria-hidden=true>↗</span></button></div></article><article class="offer" data-category="75 минут"><div><h3>Расслабляющий уход</h3><p>Спокойная процедура для тела с уходовыми средствами.</p></div><div class="offer-meta"><strong>4 500 ₽</strong><span>75 минут</span><button type=button class=pick data-book=2>Выбрать <span aria-hidden=true>↗</span></button></div></article></div>
+  </section>
+  <section class="shell photo-feature demo-section">
+    <img src="../assets/atelier-detail.webp" alt="Зал салона с креслами и рабочими местами стилистов" width="1200" height="800" loading="lazy">
+    <div><h2>Перед первым визитом</h2><p>Для укладки пригодится фото желаемого результата. Перед уходом за лицом расскажите мастеру о чувствительности кожи и недавних процедурах.</p></div>
+  </section>
+  <section class="shell demo-section" id="team" aria-labelledby="team-title">
+    <div class="demo-section-heading"><h2 id="team-title">Выберите мастера</h2><p>У каждой услуги своя специализация. Выбор подставит мастера и услугу в демо-форму.</p></div>
+    <div class="specialists">
+      <article class="specialist"><h3>Мастер по волосам</h3><p class="specialist-focus">Укладка и форма</p><p>Поможет подобрать укладку под длину волос и событие.</p>
+        <button class="pick" type="button" data-book="0" data-specialist="Мастер по волосам">Выбрать мастера ↗</button>
+      </article>
+      <article class="specialist"><h3>Мастер по уходу за лицом</h3><p class="specialist-focus">Очищение и увлажнение</p><p>Уточнит особенности кожи и подберёт формат ухода.</p>
+        <button class="pick" type="button" data-book="1" data-specialist="Мастер по уходу за лицом">Выбрать мастера ↗</button>
+      </article>
+      <article class="specialist"><h3>Мастер по уходу за телом</h3><p class="specialist-focus">Расслабляющие процедуры</p><p>Расскажет, как проходит процедура и сколько времени выделить.</p>
+        <button class="pick" type="button" data-book="2" data-specialist="Мастер по уходу за телом">Выбрать мастера ↗</button>
+      </article>
+    </div>
+  </section>
+  <section class="shell guide" id="guide" aria-labelledby="guide-title">
+    <div class="guide-copy"><p class="eyebrow">Помощник Reach &amp; Form</p><h2 id="guide-title">Подобрать процедуру</h2><p>Подскажет, с какой услуги начать, и перенесёт выбор в форму записи.</p><small>Интерактивное демо с готовыми ответами.</small></div>
+    <div class="guide-panel">
+      <div class="prompt-list"><button class="prompt" type="button" data-answer="0">Нужна укладка на вечер<span aria-hidden="true">↗</span></button><button class="prompt" type="button" data-answer="1">Хочу уход за лицом<span aria-hidden="true">↗</span></button><button class="prompt" type="button" data-answer="2">Хочу расслабиться<span aria-hidden="true">↗</span></button></div>
+      <form class="guide-form" id="guide-form" data-topics="[&quot;уклад|волос|вечер&quot;, &quot;лиц|кож|увлаж&quot;, &quot;тело|расслаб|массаж&quot;]"><label for="guide-question">Или задайте свой вопрос</label><div><input id="guide-question" required maxlength="180" placeholder="Что можно выбрать?"><button type="submit" class="primary">Спросить</button></div></form><p class="answer" id="answer" aria-live="polite">Выберите один из вопросов.</p>
+      <button class="primary guide-cta" id="guide-book" type="button" data-book hidden>Выбрать время <span aria-hidden="true">↗</span></button>
+    </div>
+  </section>
+  <section class="shell demo-section demo-faq" aria-labelledby="demo-faq-title">
+    <h2 id="demo-faq-title">Частые вопросы</h2>
+    <div class="demo-faq-list">
+      <details><summary>Можно записаться без выбора мастера?</summary><p>Да. Выберите услугу и оставьте в форме вариант «Любой мастер».</p></details>
+      <details><summary>Что взять на укладку?</summary><p>Если у вас есть образ для события, покажите его мастеру на фото. Этого достаточно, чтобы обсудить форму и укладку.</p></details>
+      <details><summary>Изменится ли цена в зависимости от длины волос?</summary><p>В демо указана фиксированная стоимость. На рабочем сайте салон может задать отдельную цену для каждой длины.</p></details>
+    </div>
+  </section>
+  <section class="shell visit" id="visit" aria-labelledby="visit-title">
+    <div><h2 id="visit-title">Перед визитом</h2><p>Для первого визита можно выбрать любого мастера.</p></div>
+    <dl><div><dt>График в демо</dt><dd>Ежедневно, 10:00–21:00</dd></div><div><dt>Как это работает</dt><dd>Выберите дату и время</dd></div></dl>
+    <button class="primary" type="button" data-book>Выбрать время <span aria-hidden="true">↗</span></button>
+  </section>
+<section class="shell route" id="route" aria-labelledby="route-title"><div><p class="eyebrow">Навигация в демо</p><h2 id="route-title">Как добраться</h2><p>На карте показан городской ориентир для проверки маршрута. По этому адресу нет точки обслуживания Reach &amp; Form.</p></div><div class="route-card"><strong>ТЦ «Центр города»</strong><address>Краснодар, ул. Красная, 176, корп. 7</address><p>Пешком от остановок на улице Красной. В карте можно выбрать маршрут из своей точки.</p><a class="primary" href="https://yandex.ru/maps/?text=%D0%9A%D1%80%D0%B0%D1%81%D0%BD%D0%BE%D0%B4%D0%B0%D1%80%2C+%D1%83%D0%BB.+%D0%9A%D1%80%D0%B0%D1%81%D0%BD%D0%B0%D1%8F%2C+176%2C+%D0%BA%D0%BE%D1%80%D0%BF.+7" target="_blank" rel="noopener noreferrer">Открыть на карте ↗</a></div></section>
+</main>
+<footer class="shell footer">
+  <div><a class="wordmark" href="../#work">Reach <i>&amp;</i> Form</a><p>Демо-концепт студии. Цены, график и время визита указаны для примера. <a href="https://www.pexels.com/photo/woman-standing-in-front-of-woman-sitting-on-chair-inside-room-1654834/" rel="noopener noreferrer" target="_blank">Источник стокового фото</a>.</p></div>
+  <div class="footer-links"><a href="../#work">Все примеры</a><a class="primary" href="https://t.me/sergiovolkov01" rel="noopener noreferrer" target="_blank">Обсудить такой сайт <span aria-hidden="true">↗</span></a></div>
+</footer>
+<button class="primary mobile-cta" type="button" data-book>Выбрать время <span aria-hidden="true">↗</span></button>
+<dialog id="booking" aria-labelledby="booking-title">
+  <button type="button" class="close" aria-label="Закрыть">×</button>
+  <p class="eyebrow">Демонстрация · запись</p>
+  <h2 id="booking-title">Выбрать время</h2>
+  <form id="booking-form">
+    <label>Услуга<select id="choice"><option>Укладка</option><option>Уход за лицом</option><option>Расслабляющий уход</option></select></label><label>Мастер<select id="specialist"><option value="">Любой мастер</option><option>Мастер по волосам</option><option>Мастер по уходу за лицом</option><option>Мастер по уходу за телом</option></select></label>
+    <label>Дата<input type="date" id="date" required></label>
+    <label>Время<select id="time" required><option value="">Выбрать время</option><option>12:00</option><option>14:30</option><option>17:00</option><option>19:30</option></select></label>
+    <button type="submit" class="primary">Проверить сценарий <span aria-hidden="true">↗</span></button>
+  </form>
+  <p id="feedback" aria-live="polite">Данные остаются в браузере. Реальный визит не создаётся.</p>
+</dialog>
+<script type="application/json" id="guide-data">[{"text": "Для события подойдёт укладка. На неё отведено 45 минут, цена в примере 2 800 ₽.", "choice": 0}, {"text": "Начните с ухода за лицом. На визит отведён час, цена в примере 3 200 ₽.", "choice": 1}, {"text": "Расслабляющий уход занимает 75 минут и стоит 4 500 ₽ в этом примере.", "choice": 2}]</script>
+</body>
+</html>

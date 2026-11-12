@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#202322">
+<meta name="description" content="Reach &amp; Form: интерактивный концепт сайта. Барбершоп, услуги, помощник и сценарий записи.">
+<title>Reach &amp; Form</title>
+<meta property="og:title" content="Reach &amp; Form">
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="common.css">
+<script src="demo.js" defer></script>
+</head>
+<body class="barber">
+<header class="shell header" id="top">
+  <a class="wordmark" href="../#work" aria-label="Reach &amp; Form, к примерам работ">Reach <i>&amp;</i> Form</a>
+  <nav aria-label="Навигация по примеру"><a href="#services">Услуги</a><a href="#team">Мастера</a><a href="#guide">Помощник</a><a href="#visit">Визит</a><a href="#route">Как добраться</a></nav>
+  <button class="primary header-cta" type="button" data-book>Записаться <span aria-hidden="true">↗</span></button>
+</header>
+<main>
+  <section class="shell hero" aria-labelledby="headline">
+    <div class="hero-copy">
+      <p class="eyebrow">Барбершоп <span>·</span> Демо Reach &amp; Form</p>
+      <h1 id="headline">Точная стрижка.<br>Чёткий контур.</h1>
+      <p class="lead">Стрижки и оформление бороды. Выберите услугу по цене и времени, затем подберите удобный визит.</p>
+      <div class="actions"><a class="primary" href="#services">Прайс барбершопа <span aria-hidden="true">↓</span></a><a class="text-link" href="#guide">Спросить помощника <span aria-hidden="true">↗</span></a></div>
+    </div>
+    <figure class="hero-art">
+      <div class="art-fallback" aria-hidden="true"><span>Reach</span><i>&amp;</i><span>Form</span></div>
+      <img src="../assets/barber-main.webp" alt="Барбер стрижёт клиента ножницами и расчёской" width="1440" height="960" fetchpriority="high">
+    </figure>
+  </section>
+  <section class="shell catalogue" id="services" aria-labelledby="catalogue-title">
+    <h2 id="catalogue-title">Прайс барбершопа</h2>
+
+    <div class="offers"><article class="offer" data-category="60 минут"><div><h3>Мужская стрижка</h3><p>Консультация, стрижка и укладка.</p></div><div class="offer-meta"><strong>2 200 ₽</strong><span>60 минут</span><button type=button class=pick data-book=0>Выбрать <span aria-hidden=true>↗</span></button></div></article><article class="offer" data-category="30 минут"><div><h3>Борода и контур</h3><p>Форма бороды и оформление контура.</p></div><div class="offer-meta"><strong>1 400 ₽</strong><span>30 минут</span><button type=button class=pick data-book=1>Выбрать <span aria-hidden=true>↗</span></button></div></article><article class="offer" data-category="90 минут"><div><h3>Стрижка и борода</h3><p>Две услуги за один визит.</p></div><div class="offer-meta"><strong>3 200 ₽</strong><span>90 минут</span><button type=button class=pick data-book=2>Выбрать <span aria-hidden=true>↗</span></button></div></article></div>
+  </section>
+  <section class="shell photo-feature demo-section">
+    <img src="../assets/barber-detail.webp" alt="Инструменты на столе барбера" width="1200" height="800" loading="lazy">
+    <div><h2>Как проходит стрижка</h2><p>Сначала обсуждаем форму и привычки в укладке. Затем мастер подбирает длину, оформляет контур и показывает, как уложить волосы дома.</p></div>
+  </section>
+  <section class="shell demo-section" id="team" aria-labelledby="team-title">
+    <div class="demo-section-heading"><h2 id="team-title">Выберите мастера</h2><p>У каждой услуги своя специализация. Выбор подставит мастера и услугу в демо-форму.</p></div>
+    <div class="specialists">
+      <article class="specialist"><h3>Барбер по классике</h3><p class="specialist-focus">Ножницы и классическая форма</p><p>Для тех, кто хочет сохранить длину и обновить силуэт.</p>
+        <button class="pick" type="button" data-book="0" data-specialist="Барбер по классике">Выбрать мастера ↗</button>
+      </article>
+      <article class="specialist"><h3>Барбер по бороде</h3><p class="specialist-focus">Контур и форма бороды</p><p>Подберёт линию щёк и шеи с учётом роста волос.</p>
+        <button class="pick" type="button" data-book="1" data-specialist="Барбер по бороде">Выбрать мастера ↗</button>
+      </article>
+      <article class="specialist"><h3>Барбер по комплексам</h3><p class="specialist-focus">Стрижка и борода</p><p>Соберёт обе услуги в один визит.</p>
+        <button class="pick" type="button" data-book="2" data-specialist="Барбер по комплексам">Выбрать мастера ↗</button>
+      </article>
+    </div>
+  </section>
+  <section class="shell guide" id="guide" aria-labelledby="guide-title">
+    <div class="guide-copy"><p class="eyebrow">Помощник Reach &amp; Form</p><h2 id="guide-title">Подобрать услугу</h2><p>Сравнит варианты по цене и длительности и откроет запись с выбранной услугой.</p><small>Интерактивное демо с готовыми ответами.</small></div>
+    <div class="guide-panel">
+      <div class="prompt-list"><button class="prompt" type="button" data-answer="0">Есть только 30 минут<span aria-hidden="true">↗</span></button><button class="prompt" type="button" data-answer="1">Хочу обновить стрижку<span aria-hidden="true">↗</span></button><button class="prompt" type="button" data-answer="2">Нужны стрижка и борода<span aria-hidden="true">↗</span></button></div>
+      <form class="guide-form" id="guide-form" data-topics="[&quot;бород|контур|30 минут&quot;, &quot;стриж|волос&quot;, &quot;комплекс|оба|вместе&quot;]"><label for="guide-question">Или задайте свой вопрос</label><div><input id="guide-question" required maxlength="180" placeholder="Что можно выбрать?"><button type="submit" class="primary">Спросить</button></div></form><p class="answer" id="answer" aria-live="polite">Выберите один из вопросов.</p>
+      <button class="primary guide-cta" id="guide-book" type="button" data-book hidden>Записаться <span aria-hidden="true">↗</span></button>
+    </div>
+  </section>
+  <section class="shell demo-section demo-faq" aria-labelledby="demo-faq-title">
+    <h2 id="demo-faq-title">Частые вопросы</h2>
+    <div class="demo-faq-list">
+      <details><summary>Можно прийти только на бороду?</summary><p>Да. Оформление бороды и контура занимает 30 минут в этом примере.</p></details>
+      <details><summary>Нужно ли заранее выбрать стрижку?</summary><p>Достаточно объяснить, сколько длины хочется оставить и сколько времени вы готовы тратить на укладку.</p></details>
+      <details><summary>Где увидеть цену и длительность?</summary><p>В прайсе рядом с каждой услугой. При выборе мастера форма сразу подставит связанную с ним услугу.</p></details>
+    </div>
+  </section>
+  <section class="shell visit" id="visit" aria-labelledby="visit-title">
+    <div><h2 id="visit-title">Перед визитом</h2><p>Если форма ещё не выбрана, мастер поможет подобрать её в начале визита.</p></div>
+    <dl><div><dt>График в демо</dt><dd>Ежедневно, 10:00–21:00</dd></div><div><dt>Как это работает</dt><dd>Выберите дату и время</dd></div></dl>
+    <button class="primary" type="button" data-book>Записаться <span aria-hidden="true">↗</span></button>
+  </section>
+<section class="shell route" id="route" aria-labelledby="route-title"><div><p class="eyebrow">Навигация в демо</p><h2 id="route-title">Как добраться</h2><p>На карте показан городской ориентир для проверки маршрута. По этому адресу нет точки обслуживания Reach &amp; Form.</p></div><div class="route-card"><strong>Чистяковская роща</strong><address>Краснодар, ул. Колхозная, 86</address><p>Ориентир — главный вход в Чистяковскую рощу со стороны Колхозной.</p><a class="primary" href="https://yandex.ru/maps/?text=%D0%9A%D1%80%D0%B0%D1%81%D0%BD%D0%BE%D0%B4%D0%B0%D1%80%2C+%D1%83%D0%BB.+%D0%9A%D0%BE%D0%BB%D1%85%D0%BE%D0%B7%D0%BD%D0%B0%D1%8F%2C+86" target="_blank" rel="noopener noreferrer">Открыть на карте ↗</a></div></section>
+</main>
+<footer class="shell footer">
+  <div><a class="wordmark" href="../#work">Reach <i>&amp;</i> Form</a><p>Демо-концепт студии. Цены, график и время визита указаны для примера. <a href="https://www.pexels.com/photo/photo-of-a-man-getting-a-haircut-7447152/" rel="noopener noreferrer" target="_blank">Источник стокового фото</a>.</p></div>
+  <div class="footer-links"><a href="../#work">Все примеры</a><a class="primary" href="https://t.me/sergiovolkov01" rel="noopener noreferrer" target="_blank">Обсудить такой сайт <span aria-hidden="true">↗</span></a></div>
+</footer>
+<button class="primary mobile-cta" type="button" data-book>Записаться <span aria-hidden="true">↗</span></button>
+<dialog id="booking" aria-labelledby="booking-title">
+  <button type="button" class="close" aria-label="Закрыть">×</button>
+  <p class="eyebrow">Демонстрация · запись</p>
+  <h2 id="booking-title">Записаться</h2>
+  <form id="booking-form">
+    <label>Услуга<select id="choice"><option>Мужская стрижка</option><option>Борода и контур</option><option>Стрижка и борода</option></select></label><label>Мастер<select id="specialist"><option value="">Любой мастер</option><option>Барбер по классике</option><option>Барбер по бороде</option><option>Барбер по комплексам</option></select></label>
+    <label>Дата<input type="date" id="date" required></label>
+    <label>Время<select id="time" required><option value="">Выбрать время</option><option>12:00</option><option>14:30</option><option>17:00</option><option>19:30</option></select></label>
+    <button type="submit" class="primary">Проверить сценарий <span aria-hidden="true">↗</span></button>
+  </form>
+  <p id="feedback" aria-live="polite">Данные остаются в браузере. Реальный визит не создаётся.</p>
+</dialog>
+<script type="application/json" id="guide-data">[{"text": "За 30 минут можно оформить бороду и контур. Цена в примере 1 400 ₽.", "choice": 1}, {"text": "Выберите мужскую стрижку: консультация, стрижка и укладка за час. Цена 2 200 ₽.", "choice": 0}, {"text": "Комплект занимает 90 минут и стоит 3 200 ₽. По отдельности эти услуги стоят 3 600 ₽.", "choice": 2}]</script>
+</body>
+</html>
