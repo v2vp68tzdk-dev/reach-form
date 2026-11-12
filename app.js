@@ -27,12 +27,43 @@ addEventListener('scroll',progress,{passive:true});progress();
 /* Cost estimator — explicitly preliminary studio prices */
 const prices={landing:[29900,29900,'Пилотная страница · до 5 блоков'],business:[44900,44900,'Сайт для бизнеса · до 3 страниц'],automation:[9900,9900,'Кликабельный прототип помощника']};
 const rouble=n=>n.toLocaleString('ru-RU')+' ₽';
-function calc(){const selected=$('#productSelect')?.value||'landing',base=prices[selected]||prices.landing,extras=$$('.extra:checked');const min=base[0]+extras.reduce((sum,n)=>sum+Number(n.dataset.priceMin||0),0),max=base[1]+extras.reduce((sum,n)=>sum+Number(n.dataset.priceMax||n.dataset.priceMin||0),0);$('#calcPrice').textContent=min===max?rouble(min):rouble(min)+'–'+rouble(max);$('#calcBreakdown').textContent=base[2]+(extras.length?' + '+extras.length+' дополнения':'');return {min,max};}
-$('#productSelect')?.addEventListener('change',calc);$$('.extra').forEach(el=>el.addEventListener('change',calc));calc();
+function telegramDraft(message) {
+  if (!telegramUrl) return '';
+  const url = new URL(telegramUrl);
+  url.searchParams.set('text', message);
+  return url.href;
+}
+const heroContact = $('#heroContact');
+if (heroContact && telegramUrl) {
+  heroContact.href = telegramDraft('Здравствуйте! Хочу обсудить сайт для своего бизнеса.');
+}
+
+const estimateLink = $('#requestCalc');
+const productSelect = $('#productSelect');
+const industrySelect = $('#industrySelect');
+function updateEstimate() {
+  const [baseMin, baseMax, product] = prices[productSelect.value] || prices.landing;
+  const extras = $$('.extra:checked');
+  const minimum = extras.reduce((total, input) => total + Number(input.dataset.priceMin), baseMin);
+  const maximum = extras.reduce((total, input) => total + Number(input.dataset.priceMax), baseMax);
+  const amount = minimum === maximum ? rouble(minimum) : rouble(minimum) + '–' + rouble(maximum);
+  $('#calcPrice').textContent = amount;
+  $('#calcBreakdown').textContent = product + (extras.length ? ' · дополнений: ' + extras.length : '');
+
+  const extraNames = extras.map(input => input.closest('label').querySelector('span').textContent.trim());
+  const message = [
+    'Здравствуйте! Хочу обсудить расчёт с сайта Reach & Form.',
+    'Сфера: ' + industrySelect.value,
+    'Задача: ' + product,
+    'Дополнения: ' + (extraNames.join(', ') || 'нет'),
+    'Ориентир по стоимости: ' + amount,
+  ].join('\n');
+  if (telegramUrl) estimateLink.href = telegramDraft(message);
+}
+[productSelect, industrySelect, ...$$('.extra')].forEach(input => input.addEventListener('change', updateEstimate));
+updateEstimate();
 $$('[data-interest]').forEach(a=>a.addEventListener('click',()=>$('#contact')?.scrollIntoView({behavior:'smooth',block:'start'})));
 $('#mobileContactBtn')?.addEventListener('click',()=>{toggleMenu(false);$('#contact')?.scrollIntoView({behavior:'smooth',block:'start'});});
-$('#requestCalc')?.addEventListener('click',async()=>{const estimate=calc(),selected=prices[$('#productSelect').value],extras=$$('.extra:checked').map(x=>x.parentElement.querySelector('span')?.textContent||x.value);const summary=`Сфера: ${$('#industrySelect').value}. Задача: ${selected[2]}. Дополнения: ${extras.join(', ')||'нет'}. Предварительная цена: ${estimate.min===estimate.max?rouble(estimate.min):rouble(estimate.min)+'–'+rouble(estimate.max)}. Финальная цена — после уточнения объёма.`;const status=$('#calcStatus');try{await navigator.clipboard.writeText(summary);if(status)status.textContent='Расчёт скопирован. Откройте Telegram и вставьте его в сообщение.';}catch{if(status)status.textContent=summary+' Откройте Telegram, чтобы обсудить задачу.';}$('#contact')?.scrollIntoView({behavior:'smooth',block:'start'});});
-
 /* Scenario model. No client analytics are implied. */
 function model(){const inputs=['inquiriesRange','minutesRange','routineRange'].map(x=>$('#'+x));if(inputs.some(x=>!x))return;const n=Number(inputs[0].value),m=Number(inputs[1].value),p=Number(inputs[2].value);$('#inquiriesVal').textContent=n;$('#minutesVal').textContent=m;$('#routineVal').textContent=p+'%';const all=n*m/60,routine=all*p/100,f=x=>x.toLocaleString('ru-RU',{maximumFractionDigits:1})+' ч';$('#hoursResult').textContent=f(routine);$('#allTime').textContent=f(all);$('#routineTime').textContent=f(routine);$('#routineBar').style.width=p+'%';}
 $$('#inquiriesRange,#minutesRange,#routineRange').forEach(el=>el.addEventListener('input',model));model();
