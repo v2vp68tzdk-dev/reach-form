@@ -392,6 +392,8 @@ footer{color:var(--mut);font-size:13px;padding:0 0 40px}
 .profile summary .note { font-weight: 400; margin-inline-start: 8px; }
 .doc .byline { color: #4a5a78; margin-top: 6px; }
 #work-list { display: grid; gap: 8px; margin-block: 12px; }
+#work-empty { margin: 12px 0; padding: 12px 14px; border: 1px dashed var(--line); border-radius: 12px; }
+#work-empty p { margin: 0; }
 .work-row { display: grid; grid-template-columns: minmax(120px, 1fr) minmax(74px, 90px) auto auto; align-items: center; gap: 8px; }
 .work-optional { display: flex; align-items: center; gap: 5px; color: var(--mut); font-size: 13px; white-space: nowrap; min-height: 44px; }
 .work-optional input { accent-color: var(--blue2); width: 18px; height: 18px; }
@@ -489,8 +491,10 @@ footer{color:var(--mut);font-size:13px;padding:0 0 40px}
     <div class="result-head"><h2>Состав работ и смета</h2><span id="estimate-hours" class="note"></span></div>
     <p class="note">Проверьте позиции из заявки и предложенные работы. Укажите часы и отметьте, что можно убрать.</p>
     <div id="work-list"></div>
+    <div id="work-empty" hidden><p>В смете пока нет работ. Добавьте хотя бы одну позицию и укажите её название и часы.</p></div>
     <div class="review-actions">
       <button class="btn q" type="button" id="add-work">Добавить работу</button>
+      <button class="btn q" type="button" id="restore-work" hidden>Вернуть работы из разбора</button>
       <button class="btn q" type="button" id="apply-work" disabled>Обновить состав в документах</button>
     </div>
     <div class="calc">
@@ -501,11 +505,11 @@ footer{color:var(--mut);font-size:13px;padding:0 0 40px}
     </div>
     <div class="options">
       <div class="estimate-option">
-        <h3>Весь объём</h3><strong id="price-full">—</strong><p id="status-full" class="note"></p>
+        <h3>Весь объём</h3><strong id="price-full">—</strong><p id="status-full" class="note" role="status"></p>
         <button class="btn p" type="button" id="use-full" disabled>Вставить в КП и ТЗ</button>
       </div>
       <div class="estimate-option budget-option">
-        <h3>Уложиться в бюджет</h3><strong id="price-lean">—</strong><p id="status-lean" class="note"></p>
+        <h3>Сокращённый объём</h3><strong id="price-lean">—</strong><p id="status-lean" class="note"></p>
         <button class="btn" type="button" id="use-lean" disabled>Вставить в КП и ТЗ</button>
       </div>
     </div>
@@ -776,7 +780,7 @@ function updateReview() {
 }
 
 function render() {
-  S.rows = S.items.map(label => workRow(label, '', false, S.workSources.get(label)));
+  S.rows = initialWorkRows();
   S.variant = null;
   S.budgetText = ['missing','ambiguous'].includes(S.budget.kind) ? '' : budgetLabel(S.budget);
   manualEdits = new Set();
@@ -837,6 +841,10 @@ function rebuild() {
   saveDraft();
 }
 
+function initialWorkRows() {
+  return [...S.workSources].map(([label, source]) => workRow(label, '', false, source));
+}
+
 function renderRows() {
   $('#work-list').innerHTML = S.rows.map((row, index) => {
     const number = index + 1;
@@ -848,20 +856,30 @@ function renderRows() {
       <button class="btn q remove-work" type="button" data-remove aria-label="Удалить работу ${number}">×</button>
     </div>`;
   }).join('');
+  $('#work-empty').hidden = S.rows.length !== 0;
+  $('#restore-work').hidden = S.rows.length !== 0 || S.workSources.size === 0;
   $('#add-work').disabled = S.rows.length >= 40;
+}
+
+function hasValidHours(row) {
+  return Number.isFinite(Number(row.hours)) && Number(row.hours) > 0;
 }
 
 function totals(rows, settings) {
   const {rate, expenses, buffer, tax} = settings;
-  if (!rows.length || rows.some(row => !row.label.trim() || !Number.isFinite(Number(row.hours)) || Number(row.hours) <= 0)) return null;
+  if (!rows.length || rows.some(row => !row.label.trim() || !hasValidHours(row))) return null;
   const hours = rows.reduce((sum, row) => sum + Number(row.hours), 0);
   const price = Math.ceil((rate * hours + rate * hours * buffer / 100 + expenses) * 100 / (100 - tax));
   return Number.isSafeInteger(price) && price > 0 ? {hours, price, items:rows.map(row => row.label.trim())} : null;
 }
 
+function hasValidSettings({rate, expenses, buffer, tax}) {
+  return [rate, expenses, buffer, tax].every(Number.isFinite) && rate > 0 &&
+    expenses >= 0 && buffer >= 0 && tax >= 0 && tax < 100;
+}
+
 function estimate(rows, settings) {
-  const {rate, expenses, buffer, tax} = settings;
-  if (![rate, expenses, buffer, tax].every(Number.isFinite) || rate <= 0 || expenses < 0 || buffer < 0 || tax < 0 || tax >= 100) {
+  if (!hasValidSettings(settings)) {
     return {full:null, lean:null};
   }
   const full = totals(rows, settings);
@@ -875,7 +893,21 @@ function calc() {
     const field = $('#' + id);
     return field.value.trim() && !field.validity.badInput ? Number(field.value) : NaN;
   });
-  const {full, lean} = estimate(S.rows, {rate, expenses, buffer, tax});
+  const settings = {rate, expenses, buffer, tax};
+  const {full, lean} = estimate(S.rows, settings);
+  const firstIncomplete = S.rows.findIndex(row => !row.label.trim() || !hasValidHours(row));
+  let estimateIssue = '';
+  if (!S.rows.length) estimateIssue = 'Добавьте работу, чтобы рассчитать цену.';
+  else if (firstIncomplete !== -1) {
+    const row = S.rows[firstIncomplete];
+    estimateIssue = row.label.trim()
+      ? 'Укажите часы больше нуля для работы №' + (firstIncomplete + 1) + '.'
+      : 'Укажите название работы №' + (firstIncomplete + 1) + '.';
+  } else if (!hasValidSettings(settings)) {
+    estimateIssue = 'Укажите ставку больше нуля, расходы и запас на правки от нуля.';
+  } else if (!full) {
+    estimateIssue = 'Не удалось рассчитать сумму. Проверьте значения в смете.';
+  }
   S.full = full;
   S.lean = lean;
   const ceiling = S.budget.currency === 'RUB' ? S.budget.max : null;
@@ -886,10 +918,12 @@ function calc() {
   };
   $('#price-full').textContent = full ? fmt(full.price) : '—';
   $('#price-lean').textContent = lean ? fmt(lean.price) : '—';
-  $('#status-full').textContent = full ? budgetStatus(full.price) : 'Укажите название и часы по каждой работе.';
+  $('#status-full').textContent = full ? budgetStatus(full.price) : estimateIssue;
   $('#status-lean').textContent = lean
     ? budgetStatus(lean.price) + '. Убрано: ' + lean.excluded.join(', ') + '.'
-    : 'Оставьте хотя бы одну обязательную работу и отметьте, что можно убрать.';
+    : estimateIssue || (S.rows.every(row => row.optional)
+      ? 'Оставьте хотя бы одну работу без отметки «Можно убрать».'
+      : 'Отметьте, какие работы можно убрать из сокращённого варианта.');
   $('#estimate-hours').textContent = full ? moneyFormatter.format(full.hours) + ' ч. работы' : '';
   $('#use-full').disabled = !full;
   $('#apply-work').disabled = !S.rows.length || S.rows.some(row => !row.label.trim());
@@ -984,7 +1018,6 @@ function go(request = $('#msg').value.trim(), isDemo = false) {
       const sampleHours = ['4','6','7','2','4'];
       S.rows.forEach((row, index) => {
         row.hours = sampleHours[index] || '2';
-        row.optional = /форм[ауыс]\s+запис/i.test(row.label);
       });
       renderRows();
       calc();
@@ -1091,6 +1124,13 @@ $('#add-work').onclick = () => {
   S.rows.push(workRow());
   renderRows();
   $('#work-list .work-row:last-child [data-work="label"]').focus();
+  editWork();
+};
+$('#restore-work').onclick = () => {
+  if (S.rows.length || !S.workSources.size) return;
+  S.rows = initialWorkRows();
+  renderRows();
+  $('#work-list [data-work="hours"]').focus();
   editWork();
 };
 calcFields.forEach(id => { $('#' + id).oninput = editWork; });
