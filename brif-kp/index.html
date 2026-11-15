@@ -484,7 +484,7 @@ footer{color:var(--mut);font-size:13px;padding:0 0 40px}
   <button class="btn p" id="refresh-kp" type="button">Обновить КП по смете</button>
 </div>
 <p id="kp-print-stale">КП не обновлено. Вернитесь к смете и обновите предложение перед печатью.</p>
-<div class="paperbox"><div class="doc" id="kp" contenteditable="plaintext-only" aria-label="Черновик коммерческого предложения"></div></div><div class="tools noprint"><button class="btn p" data-print>Сохранить как PDF</button><button class="btn" data-copy="kp">Копировать текст</button></div><p class="note noprint">Нажмите на текст, чтобы его исправить. В окне печати выберите «Сохранить как PDF».</p></section>
+<div class="paperbox"><div class="doc" id="kp" contenteditable="plaintext-only" aria-label="Черновик коммерческого предложения"></div></div><div class="tools noprint"><button class="btn p" data-print>Сохранить как PDF</button><button class="btn" data-copy="kp">Копировать текст</button><a class="btn q" href="https://t.me/iidlya_dela" data-telegram>Новости в Telegram</a></div><p class="note noprint">Нажмите на текст, чтобы его исправить. В окне печати выберите «Сохранить как PDF».</p></section>
 <section class="panel" id="p-tz" role="tabpanel" aria-labelledby="tab-tz"><div class="paperbox"><div class="doc" id="tz" contenteditable="plaintext-only" aria-label="Черновик технического задания"></div></div><div class="tools noprint"><button class="btn p" data-print>Сохранить как PDF</button><button class="btn" data-copy="tz">Копировать текст</button></div></section>
 <section class="panel" id="p-calc" role="tabpanel" aria-labelledby="tab-calc">
   <div class="workspace-card">
@@ -675,9 +675,15 @@ function isCalendarDateValid(term) {
   return month >= 1 && month <= 12 && day >= 1 && day <= new Date(Date.UTC(year, month, 0)).getUTCDate();
 }
 
-function reviewQuestions({budget, dl, items, hasMaterials}) {
+function hasOnlySuggestedWork(items, workSources) {
+  return items.length > 0 && items.every(item => workSources.get(item) === 'template');
+}
+
+function reviewQuestions({budget, dl, items, workSources, hasMaterials}) {
   const questions = [];
-  if (!items.length) questions.push('Какую работу нужно выполнить и какой результат вы хотите получить?');
+  if (!items.length || hasOnlySuggestedWork(items, workSources)) {
+    questions.push('Какую работу нужно выполнить и какой результат вы хотите получить?');
+  }
   if (budget.kind === 'missing' || budget.kind === 'ambiguous' || budget.kind === 'negotiated') {
     questions.push('На какой бюджет вы ориентируетесь?');
   }
@@ -691,6 +697,7 @@ function parse(t) {
   const budget = readBudget(t);
   const dl = deadlinePatterns.map(pattern => t.match(pattern)?.[1]).find(term => term && isCalendarDateValid(term)) || '';
   const hasMaterials = /(?:макет|прототип)\s+[^.!?\n]{0,30}готов|готов[а-яё]*\s+(?:макет|прототип)/iu.test(t);
+  const suppliedContent = /(?:^|\s+и\s+)(?:тексты?|фото(?:графи[ия])?|материалы?)(?:\s+и\s+(?:тексты?|фото(?:графи[ия])?|материалы?))*(?:\s+(?:для\s+сайта|у\s+нас|уже|сами))*\s+(?:дадим|предоставим|пришл[её]м|отправим|есть|готов[аояы]?)(?![а-яё])/iu;
   const sitePattern = /сайт|лендинг|в[её]рстк|сверстат|тильд|tilda/iu;
   const changePattern = /поправ|исправ|замен[аиуы]|обнов[ил]|доработ|добави|подправ/iu;
   const notRequested = /^(?:но\s+)?(?:(?:не\s+(?:нуж|требу|дела|включа|добавля)|без\s+))|(?:не\s+(?:нуж|требу|входит)|уже\s+(?:есть|готов)|есть\s+готов|(?:фирменный стиль|фирстиль|логотип|макет|прототип)\s+есть(?:\s|$))/iu;
@@ -698,9 +705,11 @@ function parse(t) {
   const socialWork = /(?:вед(?:ение|[её]м|ти)|продвижен|продвиг|управля|администр|оформлен|оформит|настро|контент[ -]план|публикац|пост[ыаов]|сторис)|(?:^|\s)smm(?:\s|[-–—]|$)/iu;
   const needPrefix = /^(?:(?:нам|мне|также)\s+)?(?:нуж[а-яё]*|требу[а-яё]*|необходимо|хотим)\s+/iu;
   const metadata = /\s+(?=(?:бюджет[а-яё]*|срок(?:и|а)?|дедлайн)(?![а-яё]))/iu;
-  const clauses = t.split(/[;\n]+|[.!?](?:\s+|$)|,\s+|\s+[—–]\s+|\s+и\s+(?=(?:не\s+)?нуж[а-яё]*\s)|\s+но\s+/iu)
+  const clauses = t.split(/[;\n]+|[.!?](?:\s+|$)|,\s+|\s+[—–]\s+|\s+и\s+(?=(?:не\s+)?нуж[а-яё]*\s|адаптац[а-яё]*\s+под)|\s+но\s+/iu)
     .map(clause => clause.trim()).filter(Boolean);
+  const hasContent = clauses.some(clause => suppliedContent.test(clause));
   const requests = clauses
+    .map(clause => clause.replace(suppliedContent, '').trim())
     .filter(clause => !notRequested.test(clause))
     .map(clause => clause.replace(/\s+(?:без|кроме)\s+.*$/iu, '').trim())
     .filter(Boolean);
@@ -718,7 +727,7 @@ function parse(t) {
   const summarize = clause => clause.replace(needPrefix, '').split(metadata)[0].trim();
   const sentenceCase = text => text ? text[0].toUpperCase() + text.slice(1) : '';
   const requestedWork = requests.filter(clause => {
-    const includesFeature = /обратн[а-яё]*\s+звон|\d+\s+блок|всплыва|страниц|адаптив|слайд|баннер|раздел|мобильн[а-яё]*\s+верси|форм[ауыс]\s+(?:запис|заяв|обратн|расч)/iu.test(clause);
+    const includesFeature = /обратн[а-яё]*\s+звон|\d+\s+блок|всплыва|страниц|адаптив|слайд|баннер|раздел|мобильн[а-яё]*\s+верси|форм(?:а|у|ы|е|ой|ою)\s+(?:запис|заяв|обратн|расч|бронир)|адаптац[а-яё]*\s+под\s+(?:телефон|мобильн[а-яё]*|смартфон)/iu.test(clause);
     const includesDeliverable = /(?:экспорт|файл[а-яё]*|формат[а-яё]*|сдач[а-яё]*)\s+(?:в\s+)?(?:svg|png|pdf|jpg|jpeg|webp|figma)|(?:верси[а-яё]*|адаптац[а-яё]*|вариант[а-яё]*)\s+(?:для|под)\s+(?:соцсет|социальн[а-яё]*\s+сет)/iu.test(clause);
     return (includesFeature || includesDeliverable) && !/^(?:бюджет|срок|дедлайн)/iu.test(clause);
   }).map(clause => sentenceCase(summarize(clause)));
@@ -733,7 +742,7 @@ function parse(t) {
     services = [web, ...sv.filter(service => service !== SV[1])];
   }
   if (services.length > 1) flags.push('Распознано несколько услуг. Проверьте состав работ по каждой.');
-  if (/срочн|вчера|как можно быстрее/i.test(t)) flags.push('Срочный запрос. Уточните дату сдачи.');
+  if (/срочн|вчера|как можно быстрее|побыстрее|поскорее/i.test(t)) flags.push('Срочный запрос. Уточните дату сдачи.');
   if (/недорог|д[её]шев|подешевле/i.test(t)) flags.push('Цена важна. Согласуйте состав работ.');
   if (/красиво|как у всех|на ваше усмотрение|на ваш вкус/i.test(t)) flags.push('Запросите визуальные примеры.');
   const name = (t.match(/(?:[Мм]еня зовут|[Ээ]то)\s+([А-ЯЁ][а-яё]+)/u) || [])[1] || '';
@@ -743,10 +752,10 @@ function parse(t) {
   const directWork = new Set(requestedWork);
   if (siteEdit) services[0][2].forEach(label => directWork.add(label));
   if (!services.length && explicit) directWork.add(explicit);
-  const items = [...new Set([...templates, ...directWork])].filter(Boolean).slice(0, 40);
+  const items = [...new Set([...directWork, ...templates])].filter(Boolean).slice(0, 40);
   const workSources = new Map(items.map(label => [label, directWork.has(label) ? 'request' : 'template']));
   const summary = explicit && explicit.length <= 220 ? explicit : title;
-  S = {t, budget, dl, name, title, summary, flags, hasMaterials, items, workSources};
+  S = {t, budget, dl, name, title, summary, flags, hasMaterials: hasMaterials || hasContent, items, workSources};
   S.miss = reviewQuestions(S);
 }
 const draftKey = 'akk_draft_v1';
@@ -805,6 +814,9 @@ function writeDocuments() {
   const task = esc(S.summary || '[уточнить задачу]');
   const deadline = esc(S.dl || '[согласовать]');
   const work = listMarkup(S.items);
+  const preliminary = hasOnlySuggestedWork(S.items, S.workSources)
+    ? '<p><i>Предварительный состав, уточним после согласования задачи.</i></p>'
+    : '';
   const author = [profile.author, profile.contact].filter(Boolean).join(' · ');
   const byline = author ? `<p class="byline">Исполнитель: ${esc(author)}</p>` : '';
   const revisions = profile.revisions !== '' && profile.revisions != null ? profile.revisions : '[согласовать]';
@@ -814,12 +826,12 @@ function writeDocuments() {
     : '';
   $('#kp').innerHTML = `<div class="dh"><b>Коммерческое предложение</b><span>от ${today()}</span></div>
     <h2>${title}</h2><p>Для: ${esc(S.name || '[имя клиента]')}</p>${byline}
-    <h3>Задача</h3><p>${task}</p><h3>Состав работ</h3>${work}${excluded}
+    <h3>Задача</h3><p>${task}</p><h3>Состав работ</h3>${work}${preliminary}${excluded}
     <h3>Срок</h3><p>${deadline}</p><h3>Стоимость</h3><p class="pr" id="kp-price">${S.variant ? fmt(S.variant.price) : '[укажите стоимость]'}</p>
     <h3>Условия</h3>${terms}`;
   $('#tz').innerHTML = `<div class="dh"><b>Техническое задание</b><span>от ${today()}</span></div>
     <h2>${title}</h2>${byline}<h3>Задача</h3><p>${task}</p>
-    <h3>Работы и результаты</h3>${work}${excluded}
+    <h3>Работы и результаты</h3>${work}${preliminary}${excluded}
     <h3>Срок</h3><p>${deadline}</p><h3>Приёмка</h3>
     ${listMarkup(['Результат соответствует согласованному составу работ', 'Круги правок: ' + revisions])}
     <h3>Открытые вопросы</h3>${listMarkup(S.miss)}`;
