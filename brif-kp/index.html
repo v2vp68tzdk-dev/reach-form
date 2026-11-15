@@ -480,12 +480,17 @@ footer{color:var(--mut);font-size:13px;padding:0 0 40px}
 <div class="tabs result-tabs noprint" role="tablist" aria-label="Результаты разбора"><button class="tab" role="tab" id="tab-kp" data-t="kp" aria-controls="p-kp" aria-selected="true">КП</button><button class="tab" role="tab" id="tab-tz" data-t="tz" aria-controls="p-tz" aria-selected="false">ТЗ</button><button class="tab" role="tab" id="tab-calc" data-t="calc" aria-controls="p-calc" aria-selected="false">Смета</button><button class="tab" role="tab" id="tab-ans" data-t="ans" aria-controls="p-ans" aria-selected="false">Ответ</button></div>
 <section class="panel on" id="p-kp" role="tabpanel" aria-labelledby="tab-kp">
 <div id="kp-stale" class="stale-notice noprint" hidden>
-  <p id="kp-stale-message" role="status">Смета изменилась. В КП прежняя цена или состав работ. Обновите КП перед копированием или печатью.</p>
+  <p id="kp-stale-message" role="status">Смета изменилась. В КП прежняя цена или состав работ. Обновите КП перед копированием или сохранением PDF.</p>
   <button class="btn p" id="refresh-kp" type="button">Обновить КП по смете</button>
 </div>
 <p id="kp-print-stale">КП не обновлено. Вернитесь к смете и обновите предложение перед печатью.</p>
-<div class="paperbox"><div class="doc" id="kp" contenteditable="plaintext-only" aria-label="Черновик коммерческого предложения"></div></div><div class="tools noprint"><button class="btn p" data-print>Сохранить как PDF</button><button class="btn" data-copy="kp">Копировать текст</button><a class="btn q" href="https://t.me/iidlya_dela" data-telegram>Новости в Telegram</a></div><p class="note noprint">Нажмите на текст, чтобы его исправить. В окне печати выберите «Сохранить как PDF».</p></section>
-<section class="panel" id="p-tz" role="tabpanel" aria-labelledby="tab-tz"><div class="paperbox"><div class="doc" id="tz" contenteditable="plaintext-only" aria-label="Черновик технического задания"></div></div><div class="tools noprint"><button class="btn p" data-print>Сохранить как PDF</button><button class="btn" data-copy="tz">Копировать текст</button></div></section>
+<div class="paperbox"><div class="doc" id="kp" contenteditable="plaintext-only" aria-label="Черновик коммерческого предложения"></div></div>
+<div class="tools noprint"><button class="btn p" type="button" data-pdf="kp">Скачать PDF</button><button class="btn" data-copy="kp">Копировать текст</button><a class="btn q" href="https://t.me/iidlya_dela" data-telegram>Новости в Telegram</a></div>
+<p class="note noprint" data-pdf-result hidden><span role="status"></span> <a class="btn q" target="_blank" rel="noopener" hidden>Открыть PDF</a></p>
+<p class="note noprint">Нажмите на текст, чтобы его исправить.</p></section>
+<section class="panel" id="p-tz" role="tabpanel" aria-labelledby="tab-tz"><div class="paperbox"><div class="doc" id="tz" contenteditable="plaintext-only" aria-label="Черновик технического задания"></div></div>
+<div class="tools noprint"><button class="btn p" type="button" data-pdf="tz">Скачать PDF</button><button class="btn" data-copy="tz">Копировать текст</button></div>
+<p class="note noprint" data-pdf-result hidden><span role="status"></span> <a class="btn q" target="_blank" rel="noopener" hidden>Открыть PDF</a></p></section>
 <section class="panel" id="p-calc" role="tabpanel" aria-labelledby="tab-calc">
   <div class="workspace-card">
     <div class="result-head"><h2>Состав работ и смета</h2><span id="estimate-hours" class="note"></span></div>
@@ -789,6 +794,7 @@ function updateReview() {
 }
 
 function render() {
+  loadPdfEngine().catch(() => {});
   S.rows = initialWorkRows();
   S.variant = null;
   S.budgetText = ['missing','ambiguous'].includes(S.budget.kind) ? '' : budgetLabel(S.budget);
@@ -810,6 +816,8 @@ function listMarkup(items, empty = '[уточнить состав работ]')
 }
 
 function writeDocuments() {
+  clearDocumentPdf('kp');
+  clearDocumentPdf('tz');
   const title = esc(S.title || '[уточнить услугу]');
   const task = esc(S.summary || '[уточнить задачу]');
   const deadline = esc(S.dl || '[согласовать]');
@@ -949,7 +957,8 @@ function calc() {
   const warning = $('#kp-stale');
   warning.hidden = !variantChanged;
   $('#p-kp').classList.toggle('stale-quote', Boolean(variantChanged));
-  $('#p-kp [data-print]').disabled = Boolean(variantChanged);
+  $('[data-pdf="kp"]').disabled = Boolean(variantChanged);
+  if (variantChanged) clearDocumentPdf('kp');
   $('[data-copy="kp"]').disabled = Boolean(variantChanged);
   $('#refresh-kp').textContent = updated ? 'Обновить КП по смете' : 'Вернуться к смете';
   $('#estimate-status').textContent = variantChanged
@@ -1179,13 +1188,83 @@ $('#refresh-kp').onclick = () => {
 ['kp','tz','reply'].forEach(id => { $('#' + id).oninput = () => {
   manualEdits.add(id);
   if (id === 'reply') $('#reply').dataset.edited = 'yes';
+  else clearDocumentPdf(id);
   if (id === 'kp' && replyTemplate !== 'ask' && !$('#reply').dataset.edited) ans(replyTemplate);
   saveDraft();
 }; });
 $$('[data-telegram]').forEach(link => {
   link.href = link.id === 'tg0' ? CONFIG.telegramUrl : CONFIG.productPostUrl || CONFIG.telegramUrl;
 });
-$$('[data-print]').forEach(button => { button.onclick = () => window.print(); });
+
+let pdfEngineRequest;
+function loadPdfEngine() {
+  if (!pdfEngineRequest) {
+    pdfEngineRequest = new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = './pdf-engine.js';
+      script.onload = () => window.clientKitPdf ? resolve(window.clientKitPdf) : reject(new Error('PDF engine missing'));
+      script.onerror = () => reject(new Error('PDF engine unavailable'));
+      document.head.append(script);
+    }).catch(error => {
+      pdfEngineRequest = undefined;
+      throw error;
+    });
+  }
+  return pdfEngineRequest;
+}
+
+function pdfResult(id) {
+  return $('#p-' + id + ' [data-pdf-result]');
+}
+
+function clearDocumentPdf(id) {
+  const result = pdfResult(id);
+  const link = result.querySelector('a');
+  const previousUrl = link.getAttribute('href');
+  if (previousUrl) setTimeout(() => URL.revokeObjectURL(previousUrl), 60_000);
+  link.removeAttribute('href');
+  link.hidden = true;
+  result.hidden = true;
+}
+
+$$('[data-pdf]').forEach(button => {
+  button.onclick = async () => {
+    if (button.disabled || button.getAttribute('aria-busy') === 'true') return;
+    const id = button.dataset.pdf;
+    const result = pdfResult(id);
+    const status = result.querySelector('[role="status"]');
+    clearDocumentPdf(id);
+    result.hidden = false;
+    status.textContent = 'Готовим PDF…';
+    button.setAttribute('aria-busy', 'true');
+    try {
+      const engine = window.clientKitPdf || await loadPdfEngine();
+      if (button.disabled) return;
+      const {blob, missingGlyphs} = engine($('#' + id), id);
+      const url = URL.createObjectURL(blob);
+      const link = result.querySelector('a');
+      link.href = url;
+      link.hidden = false;
+      result.hidden = false;
+      status.textContent = missingGlyphs
+        ? 'PDF готов. Некоторые символы заменены знаком �.'
+        : 'PDF готов. Если файл не появился в загрузках, откройте его здесь.';
+      const download = document.createElement('a');
+      download.href = url;
+      download.download = id === 'kp' ? 'Коммерческое предложение.pdf' : 'Техническое задание.pdf';
+      download.hidden = true;
+      document.body.append(download);
+      download.click();
+      download.remove();
+    } catch {
+      result.hidden = false;
+      status.textContent = 'Не удалось подготовить PDF. Попробуйте снова или скопируйте текст документа.';
+    } finally {
+      button.removeAttribute('aria-busy');
+    }
+  };
+});
+
 async function copy(id) {
   const value = $('#' + id).innerText;
   try {
